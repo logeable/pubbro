@@ -1,98 +1,136 @@
-import Image from 'next/image'
+'use client'
+
 import Link from 'next/link'
-import './globals.css'
+import { Layout, Card, Button } from '@/components'
+import { navigation, siteConfig } from '@/data'
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <div className="text-center max-w-4xl mx-auto">
-        <h1 className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 mb-8">
-          Welcome to PubBro! 🎉
-        </h1>
-        
-        <p className="text-2xl text-gray-700 mb-12">
-          Next.js + TypeScript + Tailwind CSS + pnpm
-        </p>
-
-        {/* 新增故事入口 */}
-        <div className="mb-12">
-          <Link 
-            href="/story"
-            className="inline-block px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xl font-semibold rounded-full hover:from-purple-700 hover:to-pink-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl mr-4 mb-4"
-          >
-            🎭 阅读我们的史诗故事
-          </Link>
-          <Link 
-            href="/news"
-            className="inline-block px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white text-xl font-semibold rounded-full hover:from-blue-700 hover:to-cyan-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl mr-4 mb-4"
-          >
-            📰 AI 新闻中心
-          </Link>
-          <Link 
-            href="/music"
-            className="inline-block px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white text-xl font-semibold rounded-full hover:from-green-700 hover:to-emerald-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl mb-4"
-          >
-            🎵 欢乐音乐播放器
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          <div className="group rounded-lg border border-blue-200 px-5 py-4 transition-colors hover:border-blue-300 hover:bg-blue-50">
-            <h2 className="text-xl font-semibold text-blue-600 mb-2">
-              Next.js 14
-            </h2>
-            <p className="text-sm text-gray-600">
-              App Router powered by React Server Components
+    <Layout>
+      {/* Hero Section */}
+      <section className="relative min-h-screen flex items-center justify-center px-4 py-20">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 opacity-60" />
+        <div className="relative z-10 max-w-4xl mx-auto text-center">
+          <div className="mb-8">
+            <div className="text-6xl mb-6 animate-bounce">🚀</div>
+            <h1 className="text-5xl md:text-7xl font-bold mb-6">
+              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                {siteConfig.title}
+              </span>
+            </h1>
+            <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-2xl mx-auto">
+              {siteConfig.description}
             </p>
           </div>
 
-          <div className="group rounded-lg border border-green-200 px-5 py-4 transition-colors hover:border-green-300 hover:bg-green-50">
-            <h2 className="text-xl font-semibold text-green-600 mb-2">
-              TypeScript
-            </h2>
-            <p className="text-sm text-gray-600">
-              Type-safe development experience
-            </p>
+          {/* Feature Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            {navigation.slice(1).map((item) => (
+              <Link key={item.href} href={item.href}>
+                <Card className="p-6 text-center hover:scale-105 transition-transform cursor-pointer">
+                  <div className="text-4xl mb-4">{item.icon}</div>
+                  <h3 className="text-lg font-semibold mb-2">{item.name}</h3>
+                  <p className="text-sm text-gray-600">{item.description}</p>
+                </Card>
+              </Link>
+            ))}
           </div>
 
-          <div className="group rounded-lg border border-purple-200 px-5 py-4 transition-colors hover:border-purple-300 hover:bg-purple-50">
-            <h2 className="text-xl font-semibold text-purple-600 mb-2">
-              Tailwind CSS
-            </h2>
-            <p className="text-sm text-gray-600">
-              Utility-first CSS framework
-            </p>
-          </div>
-
-          <div className="group rounded-lg border border-orange-200 px-5 py-4 transition-colors hover:border-orange-300 hover:bg-orange-50">
-            <h2 className="text-xl font-semibold text-orange-600 mb-2">
-              pnpm
-            </h2>
-            <p className="text-sm text-gray-600">
-              Fast, disk space efficient package manager
-            </p>
+          {/* CTA Buttons */}
+          <div className="flex flex-wrap justify-center gap-4">
+            <Link href="/news">
+              <Button size="lg" variant="primary">
+                📰 浏览AI新闻
+              </Button>
+            </Link>
+            <Link href="/music">
+              <Button size="lg" variant="secondary">
+                🎵 听音乐播放器
+              </Button>
+            </Link>
+            <Link href="/tts">
+              <Button size="lg" variant="primary" className="bg-gradient-to-r from-green-600 to-emerald-600">
+                🎙️ TTS语音合成
+              </Button>
+            </Link>
+            <Link href="/story">
+              <Button size="lg" variant="ghost">
+                🎭 阅读我们的故事
+              </Button>
+            </Link>
           </div>
         </div>
+      </section>
 
-        <div className="flex gap-4 justify-center">
-          <a
-            href="https://nextjs.org/docs"
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Examples
-          </a>
+      {/* Features Section */}
+      <section className="py-20 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                技术栈展示
+              </span>
+            </h2>
+            <p className="text-lg text-gray-600">现代化技术栈的完美融合</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { name: 'Next.js 14', desc: 'App Router & React Server Components', icon: '⚡', color: 'from-black to-gray-700' },
+              { name: 'TypeScript', desc: '类型安全的开发体验', icon: '🔷', color: 'from-blue-600 to-blue-700' },
+              { name: 'Tailwind CSS', desc: '原子化CSS框架', icon: '🎨', color: 'from-cyan-500 to-blue-500' },
+              { name: 'Web Audio API', desc: '浏览器原生音频合成', icon: '🎵', color: 'from-green-500 to-emerald-500' }
+            ].map((tech) => (
+              <Card key={tech.name} className="p-6">
+                <div className="text-center">
+                  <div className="text-4xl mb-4">{tech.icon}</div>
+                  <h3 className={`text-lg font-bold bg-gradient-to-r ${tech.color} bg-clip-text text-transparent mb-2`}>
+                    {tech.name}
+                  </h3>
+                  <p className="text-sm text-gray-600">{tech.desc}</p>
+                </div>
+              </Card>
+            ))}
+          </div>
         </div>
-      </div>
-    </main>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-20 px-4 bg-gradient-to-r from-blue-50 to-purple-50">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-8">项目统计</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+              <div className="text-4xl font-bold text-blue-600 mb-2">4+</div>
+              <div className="text-gray-600">功能页面</div>
+            </div>
+            <div>
+              <div className="text-4xl font-bold text-purple-600 mb-2">100%</div>
+              <div className="text-gray-600">TypeScript</div>
+            </div>
+            <div>
+              <div className="text-4xl font-bold text-pink-600 mb-2">∞</div>
+              <div className="text-gray-600">创意可能</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-8 px-4 border-t">
+        <div className="max-w-4xl mx-auto text-center">
+          <p className="text-gray-600 mb-2">🤖 由 {siteConfig.author} 共同创造</p>
+          <div className="flex justify-center space-x-4 text-sm">
+            <a href={siteConfig.github} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800">
+              GitHub
+            </a>
+            <span className="text-gray-400">•</span>
+            <span className="text-gray-500">
+              最后更新：{new Date().toLocaleDateString('zh-CN')}
+            </span>
+          </div>
+        </div>
+      </footer>
+    </Layout>
   )
 }
