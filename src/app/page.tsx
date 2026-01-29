@@ -18,9 +18,15 @@ export default function Home() {
         <div className="mb-12">
           <Link 
             href="/story"
-            className="inline-block px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xl font-semibold rounded-full hover:from-purple-700 hover:to-pink-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
+            className="inline-block px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xl font-semibold rounded-full hover:from-purple-700 hover:to-pink-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl mr-4"
           >
             🎭 阅读我们的史诗故事
+          </Link>
+          <Link 
+            href="/news"
+            className="inline-block px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white text-xl font-semibold rounded-full hover:from-blue-700 hover:to-cyan-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
+          >
+            📰 AI 新闻中心
           </Link>
         </div>
 
