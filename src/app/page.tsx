@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link'
 import './globals.css'
 
 export default function Home() {
@@ -12,6 +13,16 @@ export default function Home() {
         <p className="text-2xl text-gray-700 mb-12">
           Next.js + TypeScript + Tailwind CSS + pnpm
         </p>
+
+        {/* 新增故事入口 */}
+        <div className="mb-12">
+          <Link 
+            href="/story"
+            className="inline-block px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xl font-semibold rounded-full hover:from-purple-700 hover:to-pink-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
+          >
+            🎭 阅读我们的史诗故事
+          </Link>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           <div className="group rounded-lg border border-blue-200 px-5 py-4 transition-colors hover:border-blue-300 hover:bg-blue-50">
