@@ -177,7 +177,7 @@ export default function TTSIntegrationPage() {
           {/* Sample Text */}
           <div className="mb-6 p-4 bg-gray-50 rounded-lg">
             <p className="text-sm text-gray-600 mb-2">示例文本：</p>
-            <p className="text-gray-800 italic">"{selectedVoiceInfo.sample}"</p>
+            <p className="text-gray-800 italic">{`"${selectedVoiceInfo.sample}"`}</p>
             <button
               onClick={() => setInputText(selectedVoiceInfo.sample)}
               className="text-xs text-blue-600 hover:text-blue-800 mt-2"

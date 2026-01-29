@@ -1,4 +1,4 @@
-import { NewsItem, StoryChapter, MusicTrack, Category } from '@/types'
+import { NewsItem, StoryChapter, MusicTrack, Category, NavItem } from '@/types'
 
 // 新闻数据
 export const newsData: NewsItem[] = [

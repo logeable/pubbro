@@ -21,17 +21,17 @@ const musicTracks: MusicTrack[] = [
   {
     id: 2,
     name: 'Web Audio Generated - 欢乐颂',
-    duration: '0:08'
+    url: "", duration: '0:08'
   },
   {
     id: 3,
     name: 'Web Audio Generated - 阳光旋律',
-    duration: '0:08'
+    url: "", duration: '0:08'
   },
   {
     id: 4,
     name: 'Web Audio Generated - 快乐进行曲',
-    duration: '0:08'
+    url: "", duration: '0:08'
   }
 ]
 
@@ -40,7 +40,7 @@ export default function MusicPlayerPage() {
   const [currentTrack, setCurrentTrack] = useState(0)
   const [audioUrl, setAudioUrl] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const audioRef = useRef<HTMLAudioElement>(null)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
   const audioContextRef = useRef<AudioContext | null>(null)
   const oscillatorRef = useRef<OscillatorNode | null>(null)
   const gainNodeRef = useRef<GainNode | null>(null)
