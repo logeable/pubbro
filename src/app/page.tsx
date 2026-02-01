@@ -43,6 +43,11 @@ export default function HomePage() {
                 📰 浏览AI新闻
               </Button>
             </Link>
+            <Link href="/snake">
+              <Button size="lg" variant="secondary" className="bg-gradient-to-r from-orange-500 to-red-500">
+                🐍 贪吃蛇游戏
+              </Button>
+            </Link>
             <Link href="/music">
               <Button size="lg" variant="secondary">
                 🎵 听音乐播放器

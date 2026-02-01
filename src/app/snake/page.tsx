@@ -1,0 +1,376 @@
+'use client'
+
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { Layout } from '@/components'
+import './snake-game.css'
+
+// 游戏配置
+const GRID_SIZE = 20
+const INITIAL_SNAKE = [{ x: 10, y: 10 }]
+const INITIAL_FOOD = { x: 15, y: 15 }
+const GAME_SPEED = 150
+
+// 方向控制
+const DIRECTIONS = {
+  UP: { x: 0, y: -1 },
+  DOWN: { x: 0, y: 1 },
+  LEFT: { x: -1, y: 0 },
+  RIGHT: { x: 1, y: 0 }
+}
+
+interface Position {
+  x: number
+  y: number
+}
+
+interface GameState {
+  snake: Position[]
+  food: Position
+  direction: Position
+  gameOver: boolean
+  score: number
+  isPlaying: boolean
+  isPaused: boolean
+}
+
+export default function SnakeGamePage() {
+  const [gameState, setGameState] = useState<GameState>({
+    snake: INITIAL_SNAKE,
+    food: INITIAL_FOOD,
+    direction: DIRECTIONS.RIGHT,
+    gameOver: false,
+    score: 0,
+    isPlaying: false,
+    isPaused: false
+  })
+
+  const [gridSize, setGridSize] = useState(GRID_SIZE)
+  const gameLoopRef = useRef<NodeJS.Timeout | null>(null)
+  const touchStartRef = useRef<Position | null>(null)
+  const gameBoardRef = useRef<HTMLDivElement>(null)
+
+  // 响应式网格大小
+  useEffect(() => {
+    const updateGridSize = () => {
+      const width = Math.min(window.innerWidth - 40, 600)
+      const cellSize = Math.floor(width / GRID_SIZE)
+      setGridSize(Math.floor(width / cellSize))
+    }
+
+    updateGridSize()
+    window.addEventListener('resize', updateGridSize)
+    return () => window.removeEventListener('resize', updateGridSize)
+  }, [])
+
+  // 游戏循环
+  useEffect(() => {
+    if (!gameState.isPlaying || gameState.isPaused || gameState.gameOver) {
+      if (gameLoopRef.current) {
+        clearInterval(gameLoopRef.current)
+        gameLoopRef.current = null
+      }
+      return
+    }
+
+    gameLoopRef.current = setInterval(() => {
+      moveSnake()
+    }, GAME_SPEED)
+
+    return () => {
+      if (gameLoopRef.current) {
+        clearInterval(gameLoopRef.current)
+      }
+    }
+  }, [gameState.isPlaying, gameState.isPaused, gameState.gameOver])
+
+  // 移动蛇
+  const moveSnake = useCallback(() => {
+    setGameState(prev => {
+      const head = prev.snake[0]
+      const newHead = {
+        x: head.x + prev.direction.x,
+        y: head.y + prev.direction.y
+      }
+
+      // 检查边界碰撞
+      if (newHead.x < 0 || newHead.x >= GRID_SIZE || newHead.y < 0 || newHead.y >= GRID_SIZE) {
+        return { ...prev, gameOver: true, isPlaying: false }
+      }
+
+      // 检查自身碰撞
+      if (prev.snake.some(segment => segment.x === newHead.x && segment.y === newHead.y)) {
+        return { ...prev, gameOver: true, isPlaying: false }
+      }
+
+      const newSnake = [newHead, ...prev.snake]
+      let newFood = prev.food
+      let newScore = prev.score
+
+      // 检查是否吃到食物
+      if (newHead.x === prev.food.x && newHead.y === prev.food.y) {
+        newScore += 10
+        // 生成新食物（确保不在蛇身上）
+        do {
+          newFood = {
+            x: Math.floor(Math.random() * GRID_SIZE),
+            y: Math.floor(Math.random() * GRID_SIZE)
+          }
+        } while (newSnake.some(segment => segment.x === newFood.x && segment.y === newFood.y))
+      } else {
+        newSnake.pop()
+      }
+
+      return {
+        ...prev,
+        snake: newSnake,
+        food: newFood,
+        score: newScore
+      }
+    })
+  }, [])
+
+  // 键盘控制
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (!gameState.isPlaying || gameState.isPaused) return
+
+      const key = e.key
+      setGameState(prev => {
+        let newDirection = prev.direction
+
+        switch (key) {
+          case 'ArrowUp':
+          case 'w':
+          case 'W':
+            if (prev.direction.y === 0) newDirection = DIRECTIONS.UP
+            break
+          case 'ArrowDown':
+          case 's':
+          case 'S':
+            if (prev.direction.y === 0) newDirection = DIRECTIONS.DOWN
+            break
+          case 'ArrowLeft':
+          case 'a':
+          case 'A':
+            if (prev.direction.x === 0) newDirection = DIRECTIONS.LEFT
+            break
+          case 'ArrowRight':
+          case 'd':
+          case 'D':
+            if (prev.direction.x === 0) newDirection = DIRECTIONS.RIGHT
+            break
+          case ' ':
+            e.preventDefault()
+            return { ...prev, isPaused: !prev.isPaused }
+        }
+
+        return { ...prev, direction: newDirection }
+      })
+    }
+
+    window.addEventListener('keydown', handleKeyPress)
+    return () => window.removeEventListener('keydown', handleKeyPress)
+  }, [gameState.isPlaying, gameState.isPaused])
+
+  // 触摸控制
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0]
+    touchStartRef.current = {
+      x: touch.clientX,
+      y: touch.clientY
+    }
+  }
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStartRef.current || !gameState.isPlaying || gameState.isPaused) return
+
+    const touch = e.changedTouches[0]
+    const deltaX = touch.clientX - touchStartRef.current.x
+    const deltaY = touch.clientY - touchStartRef.current.y
+    const minSwipeDistance = 50
+
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+      // 水平滑动
+      if (Math.abs(deltaX) > minSwipeDistance) {
+        setGameState(prev => {
+          let newDirection = prev.direction
+          if (deltaX > 0 && prev.direction.x === 0) {
+            newDirection = DIRECTIONS.RIGHT
+          } else if (deltaX < 0 && prev.direction.x === 0) {
+            newDirection = DIRECTIONS.LEFT
+          }
+          return { ...prev, direction: newDirection }
+        })
+      }
+    } else {
+      // 垂直滑动
+      if (Math.abs(deltaY) > minSwipeDistance) {
+        setGameState(prev => {
+          let newDirection = prev.direction
+          if (deltaY > 0 && prev.direction.y === 0) {
+            newDirection = DIRECTIONS.DOWN
+          } else if (deltaY < 0 && prev.direction.y === 0) {
+            newDirection = DIRECTIONS.UP
+          }
+          return { ...prev, direction: newDirection }
+        })
+      }
+    }
+
+    touchStartRef.current = null
+  }
+
+  // 游戏控制函数
+  const startGame = () => {
+    setGameState({
+      snake: INITIAL_SNAKE,
+      food: INITIAL_FOOD,
+      direction: DIRECTIONS.RIGHT,
+      gameOver: false,
+      score: 0,
+      isPlaying: true,
+      isPaused: false
+    })
+  }
+
+  const pauseGame = () => {
+    setGameState(prev => ({ ...prev, isPaused: !prev.isPaused }))
+  }
+
+  const resetGame = () => {
+    setGameState({
+      snake: INITIAL_SNAKE,
+      food: INITIAL_FOOD,
+      direction: DIRECTIONS.RIGHT,
+      gameOver: false,
+      score: 0,
+      isPlaying: false,
+      isPaused: false
+    })
+  }
+
+  // 渲染游戏网格
+  const renderGrid = () => {
+    const grid = []
+    for (let y = 0; y < GRID_SIZE; y++) {
+      for (let x = 0; x < GRID_SIZE; x++) {
+        const isSnake = gameState.snake.some(segment => segment.x === x && segment.y === y)
+        const isFood = gameState.food.x === x && gameState.food.y === y
+        const isHead = gameState.snake[0].x === x && gameState.snake[0].y === y
+
+        let cellClass = 'game-cell'
+        if (isFood) cellClass += ' food'
+        if (isSnake) {
+          cellClass += isHead ? ' snake-head' : ' snake-body'
+        }
+
+        grid.push(
+          <div
+            key={`${x}-${y}`}
+            className={cellClass}
+            style={{
+              width: `${100 / GRID_SIZE}%`,
+              height: `${100 / GRID_SIZE}%`
+            }}
+          />
+        )
+      }
+    }
+    return grid
+  }
+
+  return (
+    <Layout>
+      <div className="min-h-screen bg-gradient-to-br from-green-100 via-blue-50 to-purple-50 flex items-center justify-center p-4">
+        <div className="max-w-4xl mx-auto w-full">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="text-6xl mb-4">🐍</div>
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
+              贪吃蛇大作战
+            </h1>
+            <p className="text-lg text-gray-600 mb-6">
+              专为手机优化的经典游戏
+            </p>
+          </div>
+
+          {/* Game Stats */}
+          <div className="flex justify-center items-center space-x-6 mb-6">
+            <div className="bg-white rounded-lg px-6 py-3 shadow-md">
+              <div className="text-2xl font-bold text-blue-600">{gameState.score}</div>
+              <div className="text-sm text-gray-600">分数</div>
+            </div>
+            <div className="bg-white rounded-lg px-6 py-3 shadow-md">
+              <div className="text-2xl font-bold text-green-600">{gameState.snake.length}</div>
+              <div className="text-sm text-gray-600">长度</div>
+            </div>
+            <div className="bg-white rounded-lg px-6 py-3 shadow-md">
+              <div className="text-2xl font-bold text-purple-600">
+                {gameState.isPlaying ? (gameState.isPaused ? '⏸️' : '▶️') : '⏹️'}
+              </div>
+              <div className="text-sm text-gray-600">状态</div>
+            </div>
+          </div>
+
+          {/* Game Board */}
+          <div className="flex justify-center mb-6">
+            <div
+              ref={gameBoardRef}
+              className="game-board"
+              style={{
+                width: 'min(80vw, 400px)',
+                height: 'min(80vw, 400px)',
+                maxWidth: '400px',
+                maxHeight: '400px'
+              }}
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+            >
+              {renderGrid()}
+            </div>
+          </div>
+
+          {/* Game Controls */}
+          <div className="flex flex-col items-center space-y-4">
+            {/* Control Buttons */}
+            <div className="flex space-x-4">
+              {!gameState.isPlaying ? (
+                <Button onClick={startGame} size="lg" variant="primary">
+                  🎮 开始游戏
+                </Button>
+              ) : (
+                <>
+                  <Button onClick={pauseGame} size="lg" variant="secondary">
+                    {gameState.isPaused ? '▶️ 继续' : '⏸️ 暂停'}
+                  </Button>
+                  <Button onClick={resetGame} size="lg" variant="ghost">
+                    🔄 重置
+                  </Button>
+                </>
+              )}
+            </div>
+
+            {/* Game Over */}
+            {gameState.gameOver && (
+              <div className="bg-red-100 border border-red-300 rounded-lg p-4 text-center">
+                <h3 className="text-lg font-semibold text-red-800 mb-2">游戏结束！</h3>
+                <p className="text-red-600 mb-2">最终分数: {gameState.score}</p>
+                <p className="text-red-600 text-sm">长度: {gameState.snake.length}</p>
+              </div>
+            )}
+
+            {/* Instructions */}
+            <div className="bg-white rounded-lg p-4 text-center max-w-md">
+              <h4 className="font-semibold text-gray-800 mb-2">操作说明</h4>
+              <div className="text-sm text-gray-600 space-y-1">
+                <p>📱 <strong>手机:</strong> 滑动屏幕控制方向</p>
+                <p>⌨️ <strong>电脑:</strong> 方向键或WASD移动</p>
+                <p>⏸️ <strong>暂停:</strong> 空格键或暂停按钮</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Layout>
+  )
+}

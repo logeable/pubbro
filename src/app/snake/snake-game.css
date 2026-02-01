@@ -1,0 +1,212 @@
+/* 贪吃蛇游戏样式 */
+
+.game-board {
+  position: relative;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  border: 3px solid #e94560;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(233, 69, 96, 0.3);
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+}
+
+.game-cell {
+  position: absolute;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.1s ease;
+}
+
+.game-cell.food {
+  background: radial-gradient(circle, #ff6b6b 0%, #ee5a24 100%);
+  border-radius: 50%;
+  animation: foodPulse 1s ease-in-out infinite;
+  box-shadow: 0 0 10px #ff6b6b;
+}
+
+.game-cell.snake-head {
+  background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+  border-radius: 30%;
+  box-shadow: 0 0 8px #4ecdc4;
+  animation: snakeHeadGlow 2s ease-in-out infinite;
+}
+
+.game-cell.snake-body {
+  background: linear-gradient(135deg, #26de81 0%, #20bf6b 100%);
+  border-radius: 20%;
+  box-shadow: 0 0 5px #26de81;
+}
+
+@keyframes foodPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+@keyframes snakeHeadGlow {
+  0%, 100% {
+    box-shadow: 0 0 8px #4ecdc4;
+  }
+  50% {
+    box-shadow: 0 0 15px #4ecdc4, 0 0 25px #4ecdc4;
+  }
+}
+
+/* 移动端优化 */
+@media (max-width: 768px) {
+  .game-board {
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .game-cell {
+    transition: none; /* 移动端禁用过渡效果提升性能 */
+  }
+}
+
+/* 游戏按钮样式 */
+.game-button {
+  transition: all 0.2s ease;
+  touch-action: manipulation;
+}
+
+.game-button:active {
+  transform: scale(0.95);
+}
+
+/* 分数动画 */
+.score-update {
+  animation: scoreBounce 0.3s ease-out;
+}
+
+@keyframes scoreBounce {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* 游戏结束动画 */
+.game-over {
+  animation: gameOverPulse 1s ease-in-out infinite;
+}
+
+@keyframes gameOverPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* 触摸反馈 */
+.touch-feedback {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(78, 205, 196, 0.3);
+  pointer-events: none;
+  animation: touchRipple 0.6s ease-out;
+}
+
+@keyframes touchRipple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* 响应式字体 */
+@media (max-width: 480px) {
+  .game-stats .text-2xl {
+    font-size: 1.5rem;
+  }
+  
+  .game-stats .text-sm {
+    font-size: 0.75rem;
+  }
+}
+
+/* 暗色模式支持 */
+@media (prefers-color-scheme: dark) {
+  .game-board {
+    background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #2d1b69 100%);
+    border-color: #ff6b6b;
+  }
+}
+
+/* 高对比度模式 */
+@media (prefers-contrast: high) {
+  .game-cell.food {
+    border: 2px solid #ffffff;
+  }
+  
+  .game-cell.snake-head {
+    border: 2px solid #ffffff;
+  }
+  
+  .game-cell.snake-body {
+    border: 1px solid #ffffff;
+  }
+}
+
+/* 减少动画偏好 */
+@media (prefers-reduced-motion: reduce) {
+  .game-cell {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  .game-cell.food {
+    animation: none !important;
+  }
+  
+  .game-cell.snake-head {
+    animation: none !important;
+  }
+}
+
+/* 性能优化 */
+.game-board * {
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* 加载动画 */
+.loading-snake {
+  animation: snakeLoading 1.5s ease-in-out infinite;
+}
+
+@keyframes snakeLoading {
+  0% {
+    opacity: 0.5;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 0.5;
+    transform: scale(0.9);
+  }
+}

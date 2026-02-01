@@ -147,10 +147,22 @@ export const navigation: NavItem[] = [
     description: '最新AI资讯'
   },
   {
+    name: '贪吃蛇游戏',
+    href: '/snake',
+    icon: '🐍',
+    description: '手机优化的经典游戏'
+  },
+  {
     name: '音乐播放器',
     href: '/music',
     icon: '🎵',
     description: 'Web Audio API音乐'
+  },
+  {
+    name: 'TTS语音合成',
+    href: '/tts',
+    icon: '🎙️',
+    description: '本地TTS语音合成'
   },
   {
     name: '我们的故事',
