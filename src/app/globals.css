@@ -1,3 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* CSS修复样式 - 解决样式冲突问题 */
+@import './globals-fix.css';
