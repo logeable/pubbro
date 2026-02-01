@@ -10,9 +10,9 @@ interface LayoutProps {
 
 export default function Layout({ children, className = '' }: LayoutProps) {
   return (
-    <div className={`min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 ${className}`}>
+    <div className={`min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 ${className}`}>
       <Navigation />
-      <main className="pt-16"> {/* 为固定导航栏留出空间 */}
+      <main className="pt-0"> {/* 移除了顶部padding，让hero可以全屏 */}
         {children}
       </main>
     </div>
